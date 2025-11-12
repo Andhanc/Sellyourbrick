@@ -1,11 +1,19 @@
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import {
   FiBell,
-  FiSettings,
   FiSearch,
   FiSliders,
   FiHeart,
+  FiChevronDown,
 } from 'react-icons/fi'
+import {
+  FaHome,
+  FaHeart as FaHeartSolid,
+  FaGavel,
+  FaComment,
+  FaUser,
+} from 'react-icons/fa'
 import { IoLocationOutline } from 'react-icons/io5'
 import {
   PiHouseLine,
@@ -17,9 +25,30 @@ import {
 
 const propertyTypes = [
   { label: 'Дом', icon: PiHouseLine },
-  { label: 'Вилла', icon: PiBuildings },
-  { label: 'Апартаменты', icon: PiBuildingApartment },
   { label: 'Квартира', icon: PiBuilding },
+  { label: 'Апартаменты', icon: PiBuildingApartment },
+  { label: 'Вилла', icon: PiBuildings },
+]
+
+const resortLocations = [
+  'Costa Adeje, Tenerife',
+  'Playa de las Américas, Tenerife',
+  'Los Cristianos, Tenerife',
+  'Puerto de la Cruz, Tenerife',
+  'Santa Cruz de Tenerife, Tenerife',
+  'La Laguna, Tenerife',
+  'San Cristóbal de La Laguna, Tenerife',
+  'Golf del Sur, Tenerife',
+  'Callao Salvaje, Tenerife',
+  'El Médano, Tenerife',
+]
+
+const navigationItems = [
+  { id: 'home', label: 'Главная', icon: FaHome },
+  { id: 'favourite', label: 'Понравились', icon: FaHeartSolid },
+  { id: 'auction', label: 'Аукцион', icon: FaGavel },
+  { id: 'chat', label: 'Чат', icon: FaComment },
+  { id: 'profile', label: 'Профиль', icon: FaUser },
 ]
 
 const recommendedProperties = [
@@ -31,7 +60,6 @@ const recommendedProperties = [
     price: 1900,
     image:
       'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80',
-    isFavorite: true,
   },
   {
     id: 2,
@@ -41,7 +69,6 @@ const recommendedProperties = [
     price: 1200,
     image:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
-    isFavorite: false,
   },
 ]
 
@@ -54,7 +81,6 @@ const nearbyProperties = [
     price: 1000,
     image:
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80',
-    isFavorite: false,
   },
   {
     id: 2,
@@ -64,11 +90,52 @@ const nearbyProperties = [
     price: 980,
     image:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
-    isFavorite: true,
   },
 ]
 
 function App() {
+  const [selectedLocation, setSelectedLocation] = useState(resortLocations[0])
+  const [isLocationOpen, setIsLocationOpen] = useState(false)
+  const [favoriteProperties, setFavoriteProperties] = useState(() => {
+    const initialFavorites = new Map()
+    recommendedProperties.forEach((property) => {
+      initialFavorites.set(`recommended-${property.id}`, false)
+    })
+    nearbyProperties.forEach((property) => {
+      initialFavorites.set(`nearby-${property.id}`, false)
+    })
+    return initialFavorites
+  })
+  const [activeNav, setActiveNav] = useState('home')
+  const locationRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (locationRef.current && !locationRef.current.contains(event.target)) {
+        setIsLocationOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location)
+    setIsLocationOpen(false)
+  }
+
+  const toggleFavorite = (category, id) => {
+    const key = `${category}-${id}`
+    setFavoriteProperties((prev) => {
+      const updated = new Map(prev)
+      updated.set(key, !prev.get(key))
+      return updated
+    })
+  }
+
   return (
     <div className="app">
       <header className="header">
@@ -76,11 +143,39 @@ function App() {
           <span className="header__location-icon">
             <IoLocationOutline size={20} />
           </span>
-          <div className="header__location-info">
+          <div className="header__location-info" ref={locationRef}>
             <span className="header__location-label">Location</span>
-            <button type="button" className="header__location-select">
-              Lahore, Pakistan
+            <button
+              type="button"
+              className="header__location-select"
+              onClick={() => setIsLocationOpen((prev) => !prev)}
+              aria-haspopup="listbox"
+              aria-expanded={isLocationOpen}
+            >
+              <span className="header__location-value">{selectedLocation}</span>
+              <FiChevronDown
+                size={16}
+                className={`header__location-select-icon ${
+                  isLocationOpen ? 'header__location-select-icon--open' : ''
+                }`}
+              />
             </button>
+            {isLocationOpen && (
+              <div className="header__location-dropdown">
+                {resortLocations.map((location) => (
+                  <button
+                    type="button"
+                    className={`header__location-option ${
+                      location === selectedLocation ? 'header__location-option--active' : ''
+                    }`}
+                    key={location}
+                    onClick={() => handleLocationSelect(location)}
+                  >
+                    {location}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -88,9 +183,6 @@ function App() {
           <button type="button" className="header__action-btn">
             <FiBell size={18} />
             <span className="header__action-indicator" />
-          </button>
-          <button type="button" className="header__action-btn">
-            <FiSettings size={18} />
           </button>
         </div>
       </header>
@@ -115,7 +207,7 @@ function App() {
           return (
             <button type="button" className="categories__item" key={type.label}>
               <span className="categories__icon">
-                <IconComponent size={20} />
+                <IconComponent size={28} />
               </span>
               <span className="categories__label">{type.label}</span>
             </button>
@@ -126,9 +218,6 @@ function App() {
       <section className="section">
         <div className="section__header">
           <h2 className="section__title">Recommended Property</h2>
-          <button type="button" className="section__link">
-            See all
-          </button>
         </div>
 
         <div className="property-list property-list--horizontal">
@@ -139,8 +228,12 @@ function App() {
                 <button
                   type="button"
                   className={`property-card__favorite ${
-                    property.isFavorite ? 'property-card__favorite--active' : ''
+                    favoriteProperties.get(`recommended-${property.id}`)
+                      ? 'property-card__favorite--active'
+                      : ''
                   }`}
+                  onClick={() => toggleFavorite('recommended', property.id)}
+                  aria-pressed={favoriteProperties.get(`recommended-${property.id}`)}
                 >
                   <FiHeart size={16} />
                 </button>
@@ -165,9 +258,6 @@ function App() {
       <section className="section section--spaced">
         <div className="section__header">
           <h2 className="section__title">Nearby Property</h2>
-          <button type="button" className="section__link">
-            See all
-          </button>
         </div>
 
         <div className="property-list property-list--vertical">
@@ -181,8 +271,12 @@ function App() {
                 <button
                   type="button"
                   className={`property-card__favorite ${
-                    property.isFavorite ? 'property-card__favorite--active' : ''
+                    favoriteProperties.get(`nearby-${property.id}`)
+                      ? 'property-card__favorite--active'
+                      : ''
                   }`}
+                  onClick={() => toggleFavorite('nearby', property.id)}
+                  aria-pressed={favoriteProperties.get(`nearby-${property.id}`)}
                 >
                   <FiHeart size={16} />
                 </button>
@@ -203,6 +297,40 @@ function App() {
           ))}
         </div>
       </section>
+
+      <nav className="bottom-nav">
+        {navigationItems.map((item, index) => {
+          const IconComponent = item.icon
+          const isCenter = index === 2
+          const isActive = activeNav === item.id
+
+          if (isCenter) {
+            return (
+              <button
+                type="button"
+                className={`bottom-nav__center ${isActive ? 'bottom-nav__center--active' : ''}`}
+                key={item.id}
+                onClick={() => setActiveNav(item.id)}
+                aria-label={item.label}
+              >
+                <IconComponent size={28} />
+              </button>
+            )
+          }
+
+          return (
+            <button
+              type="button"
+              className={`bottom-nav__item ${isActive ? 'bottom-nav__item--active' : ''}`}
+              key={item.id}
+              onClick={() => setActiveNav(item.id)}
+              aria-label={item.label}
+            >
+              <IconComponent size={26} />
+            </button>
+          )
+        })}
+      </nav>
     </div>
   )
 }
