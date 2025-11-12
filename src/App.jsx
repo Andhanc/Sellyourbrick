@@ -6,6 +6,7 @@ import {
   FiSliders,
   FiHeart,
   FiChevronDown,
+  FiArrowRight,
 } from 'react-icons/fi'
 import {
   FaHome,
@@ -107,6 +108,11 @@ function App() {
     return initialFavorites
   })
   const [activeNav, setActiveNav] = useState('home')
+  const [contactForm, setContactForm] = useState({
+    email: '',
+    fullName: '',
+    message: '',
+  })
   const locationRef = useRef(null)
 
   useEffect(() => {
@@ -134,6 +140,25 @@ function App() {
       updated.set(key, !prev.get(key))
       return updated
     })
+  }
+
+  const handleContactFormChange = (e) => {
+    const { name, value } = e.target
+    setContactForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleContactFormSubmit = (e) => {
+    e.preventDefault()
+    console.log('Form submitted:', contactForm)
+    setContactForm({
+      email: '',
+      fullName: '',
+      message: '',
+    })
+    alert('Спасибо за обращение! Мы свяжемся с вами в ближайшее время.')
   }
 
   return (
@@ -235,7 +260,11 @@ function App() {
                   onClick={() => toggleFavorite('recommended', property.id)}
                   aria-pressed={favoriteProperties.get(`recommended-${property.id}`)}
                 >
-                  <FiHeart size={16} />
+                  {favoriteProperties.get(`recommended-${property.id}`) ? (
+                    <FaHeartSolid size={16} />
+                  ) : (
+                    <FiHeart size={16} />
+                  )}
                 </button>
               </div>
 
@@ -278,7 +307,11 @@ function App() {
                   onClick={() => toggleFavorite('nearby', property.id)}
                   aria-pressed={favoriteProperties.get(`nearby-${property.id}`)}
                 >
-                  <FiHeart size={16} />
+                  {favoriteProperties.get(`nearby-${property.id}`) ? (
+                    <FaHeartSolid size={16} />
+                  ) : (
+                    <FiHeart size={16} />
+                  )}
                 </button>
               </div>
 
@@ -295,6 +328,71 @@ function App() {
               </div>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="contact-form-section">
+        <div className="contact-form-container">
+          <form className="contact-form" onSubmit={handleContactFormSubmit}>
+            <div className="contact-form__header">
+              <h2 className="contact-form__title">
+                Есть вопросы?
+                <span className="contact-form__title-accent">Напишите нам</span>
+                <FiArrowRight className="contact-form__arrow" size={24} />
+              </h2>
+            </div>
+            <div className="contact-form__row">
+              <div className="contact-form__field">
+                <label htmlFor="email" className="contact-form__label">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={contactForm.email}
+                  onChange={handleContactFormChange}
+                  className="contact-form__input"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              <div className="contact-form__field">
+                <label htmlFor="fullName" className="contact-form__label">
+                  ФИО
+                </label>
+                <input
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  value={contactForm.fullName}
+                  onChange={handleContactFormChange}
+                  className="contact-form__input"
+                  placeholder="Иванов Иван Иванович"
+                  required
+                />
+              </div>
+            </div>
+            <div className="contact-form__field">
+              <label htmlFor="message" className="contact-form__label">
+                Описание вопроса
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                value={contactForm.message}
+                onChange={handleContactFormChange}
+                className="contact-form__textarea"
+                placeholder="Опишите ваш вопрос подробно..."
+                rows="5"
+                required
+              />
+            </div>
+            <button type="submit" className="contact-form__submit">
+              <span>Отправить</span>
+              <FiArrowRight size={18} />
+            </button>
+          </form>
         </div>
       </section>
 
