@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import PropertyDetailPage from './pages/PropertyDetailPage'
+import MapPage from './pages/MapPage'
+import ProfilePage from './pages/ProfilePage'
+import ChatListPage from './pages/ChatListPage'
+import ChatPage from './pages/ChatPage'
 import {
   FiBell,
   FiSearch,
@@ -14,6 +18,7 @@ import {
   FiSend,
   FiGlobe,
   FiPhone,
+  FiMap,
 } from 'react-icons/fi'
 import {
   FaHome,
@@ -41,7 +46,7 @@ import {
 
 const propertyTypes = [
   { label: 'Дом', icon: PiHouseLine },
-  { label: 'Квартира', icon: PiBuilding },
+  { label: 'Карта', icon: FiMap, isMap: true },
   { label: 'Апартаменты', icon: PiBuildingApartment },
   { label: 'Вилла', icon: PiBuildings },
 ]
@@ -70,10 +75,11 @@ const navigationItems = [
 const recommendedProperties = [
   {
     id: 1,
-    tag: 'Home',
-    name: 'Mark Wilson Property',
-    location: 'Dr. San Jose, South Dakota 83475',
-    price: 1900,
+    tag: 'Apartment',
+    name: 'Lakeshore Blvd West',
+    location: '70 Washington Square South, New York, NY 10012, United States',
+    price: 797500,
+    coordinates: [28.2916, -16.6291], // Costa Adeje, Tenerife
     image:
       'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80',
     images: [
@@ -83,9 +89,9 @@ const recommendedProperties = [
       'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
     ],
-    beds: 3,
+    beds: 2,
     baths: 2,
-    sqft: 2567,
+    sqft: 2000,
     description:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
     broker: {
@@ -97,10 +103,11 @@ const recommendedProperties = [
   },
   {
     id: 2,
-    tag: 'Home',
+    tag: 'Apartment',
     name: 'Eleanor Pena Property',
-    location: '1901 Thornridge Cir. Shilo 81063',
+    location: 'Costa Adeje, Tenerife, Spain',
     price: 1200,
+    coordinates: [28.1000, -16.7200], // Playa de las Américas, Tenerife
     image:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
     images: [
@@ -127,10 +134,11 @@ const recommendedProperties = [
 const nearbyProperties = [
   {
     id: 1,
-    tag: 'Home',
+    tag: 'Apartment',
     name: 'Bessie Cooper Property',
-    location: '8502 Preston Rd. Inglewood',
+    location: 'Los Cristianos, Tenerife, Spain',
     price: 1000,
+    coordinates: [28.0500, -16.7167], // Los Cristianos, Tenerife
     image:
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80',
     images: [
@@ -154,10 +162,11 @@ const nearbyProperties = [
   },
   {
     id: 2,
-    tag: 'Home',
+    tag: 'Apartment',
     name: 'Darrell Steward Property',
-    location: 'Connecticut 35624',
+    location: 'Puerto de la Cruz, Tenerife, Spain',
     price: 980,
+    coordinates: [28.4167, -16.5500], // Puerto de la Cruz, Tenerife
     image:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
     images: [
@@ -212,6 +221,8 @@ function App() {
   const [chatInput, setChatInput] = useState('')
   const [language, setLanguage] = useState('ru')
   const [selectedProperty, setSelectedProperty] = useState(null)
+  const [showMap, setShowMap] = useState(false)
+  const [selectedChat, setSelectedChat] = useState(null)
   const locationRef = useRef(null)
   const chatMessagesRef = useRef(null)
 
@@ -397,6 +408,59 @@ function App() {
     alert('Чат с брокером будет реализован позже')
   }
 
+  // Получаем все свойства для карты
+  const allPropertiesForMap = [
+    ...recommendedProperties.map((p) => ({ ...p, category: 'recommended' })),
+    ...nearbyProperties.map((p) => ({ ...p, category: 'nearby' })),
+  ]
+
+  // Если показываем карту
+  if (showMap) {
+    return (
+      <MapPage
+        properties={allPropertiesForMap}
+        onPropertyClick={handlePropertyClick}
+        onBack={() => setShowMap(false)}
+      />
+    )
+  }
+
+  // Если выбран чат, показываем страницу чата
+  if (selectedChat) {
+    return (
+      <ChatPage
+        chat={selectedChat}
+        onBack={() => setSelectedChat(null)}
+        navigationItems={navigationItems}
+        activeNav={activeNav}
+        onNavChange={setActiveNav}
+      />
+    )
+  }
+
+  // Если выбрана страница чата, показываем список чатов
+  if (activeNav === 'chat') {
+    return (
+      <ChatListPage
+        navigationItems={navigationItems}
+        activeNav={activeNav}
+        onNavChange={setActiveNav}
+        onChatSelect={setSelectedChat}
+      />
+    )
+  }
+
+  // Если выбрана страница профиля
+  if (activeNav === 'profile') {
+    return (
+      <ProfilePage
+        navigationItems={navigationItems}
+        activeNav={activeNav}
+        onNavChange={setActiveNav}
+      />
+    )
+  }
+
   // Если выбрана страница деталей, отображаем её
   if (selectedProperty) {
     const isFavorite = favoriteProperties.get(
@@ -489,7 +553,16 @@ function App() {
         {propertyTypes.map((type) => {
           const IconComponent = type.icon
           return (
-            <button type="button" className="categories__item" key={type.label}>
+            <button
+              type="button"
+              className="categories__item"
+              key={type.label}
+              onClick={() => {
+                if (type.isMap) {
+                  setShowMap(true)
+                }
+              }}
+            >
               <span className="categories__icon">
                 <IconComponent size={28} />
               </span>

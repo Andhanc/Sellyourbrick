@@ -175,6 +175,29 @@
   outline: none;
 }
 
+.search__map-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: #ffffff;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.search__map-btn:hover {
+  background: rgba(17, 24, 39, 0.05);
+  transform: scale(1.05);
+}
+
+.search__map-btn:focus-visible {
+  outline: 2px solid #111827;
+}
+
 .search__filter {
   width: 46px;
   height: 46px;
