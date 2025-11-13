@@ -1,16 +1,80 @@
-# React + Vite
+# Sellyourbrick
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React приложение для поиска и просмотра недвижимости на Тенерифе.
 
-Currently, two official plugins are available:
+## Технологии
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19.2.0
+- Vite 7.2.2
+- React Icons 5.5.0
+- Poppins Font
 
-## React Compiler
+## Требования
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js версии 20.19+ или 22.12+
+- npm или yarn
 
-## Expanding the ESLint configuration
+## Установка и запуск
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Клонируйте репозиторий:
+```bash
+git clone <repository-url>
+cd Sellyourbrick
+```
+
+2. Установите зависимости:
+```bash
+npm install
+```
+
+3. Запустите dev-сервер:
+```bash
+npm run dev
+```
+
+4. Откройте браузер и перейдите по адресу, который покажет Vite (обычно `http://localhost:5173`)
+
+## Доступные команды
+
+- `npm run dev` - запуск dev-сервера
+- `npm run build` - сборка проекта для production
+- `npm run preview` - предпросмотр production сборки
+- `npm run lint` - проверка кода линтером
+
+## Структура проекта
+
+```
+Sellyourbrick/
+├── src/
+│   ├── App.jsx          # Главный компонент приложения
+│   ├── App.css          # Стили приложения
+│   ├── main.jsx         # Точка входа
+│   └── index.css        # Глобальные стили
+├── public/              # Статические файлы
+├── index.html           # HTML шаблон
+├── package.json         # Зависимости и скрипты
+└── vite.config.js       # Конфигурация Vite
+```
+
+## Основные функции
+
+- Поиск недвижимости
+- Фильтрация по категориям (Дом, Квартира, Апартаменты, Вилла)
+- Выбор локации (курорты Тенерифе)
+- Избранное (добавление в избранное)
+- AI-чат консультант
+- Форма обратной связи
+- Футер с кнопками загрузки приложений и социальными сетями
+- Нижняя навигационная панель
+
+## Особенности
+
+- Адаптивный дизайн для мобильных и десктопных устройств
+- Темная тема для футера
+- Интерактивные элементы с анимациями
+- Поддержка русского и английского языков
+
+## Примечания
+
+- Убедитесь, что у вас установлена правильная версия Node.js
+- При проблемах с зависимостями удалите `node_modules` и `package-lock.json`, затем выполните `npm install` заново

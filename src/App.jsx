@@ -7,6 +7,10 @@ import {
   FiHeart,
   FiChevronDown,
   FiArrowRight,
+  FiX,
+  FiSend,
+  FiGlobe,
+  FiPhone,
 } from 'react-icons/fi'
 import {
   FaHome,
@@ -14,7 +18,13 @@ import {
   FaGavel,
   FaComment,
   FaUser,
+  FaAndroid,
+  FaApple,
+  FaWhatsapp,
+  FaInstagram,
+  FaYoutube,
 } from 'react-icons/fa'
+import { FaXTwitter } from 'react-icons/fa6'
 import { IoLocationOutline } from 'react-icons/io5'
 import {
   PiHouseLine,
@@ -113,7 +123,19 @@ function App() {
     fullName: '',
     message: '',
   })
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [chatMessages, setChatMessages] = useState([
+    {
+      id: 1,
+      text: 'Здравствуйте! Я ваш AI-консультант. Чем могу помочь?',
+      sender: 'bot',
+      timestamp: new Date(),
+    },
+  ])
+  const [chatInput, setChatInput] = useState('')
+  const [language, setLanguage] = useState('ru')
   const locationRef = useRef(null)
+  const chatMessagesRef = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -159,6 +181,84 @@ function App() {
       message: '',
     })
     alert('Спасибо за обращение! Мы свяжемся с вами в ближайшее время.')
+  }
+
+  const toggleChat = () => {
+    setIsChatOpen((prev) => !prev)
+  }
+
+  const handleChatInputChange = (e) => {
+    setChatInput(e.target.value)
+  }
+
+  const handleChatSubmit = (e) => {
+    e.preventDefault()
+    if (!chatInput.trim()) return
+
+    const userMessage = chatInput.trim()
+    setChatInput('')
+
+    setChatMessages((prev) => {
+      const newMessage = {
+        id: prev.length + 1,
+        text: userMessage,
+        sender: 'user',
+        timestamp: new Date(),
+      }
+
+      // Имитация ответа бота
+      setTimeout(() => {
+        setChatMessages((current) => {
+          const botResponse = {
+            id: current.length + 1,
+            text: 'Спасибо за ваш вопрос! Я постараюсь помочь вам. Можете задать более подробный вопрос?',
+            sender: 'bot',
+            timestamp: new Date(),
+          }
+          return [...current, botResponse]
+        })
+      }, 1000)
+
+      return [...prev, newMessage]
+    })
+  }
+
+  useEffect(() => {
+    if (chatMessagesRef.current && isChatOpen) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight
+    }
+  }, [chatMessages, isChatOpen])
+
+  const handleLanguageChange = () => {
+    setLanguage((prev) => (prev === 'ru' ? 'en' : 'ru'))
+  }
+
+  const handleSocialLink = (platform) => {
+    const links = {
+      instagram: 'https://instagram.com/',
+      whatsapp: 'https://wa.me/79991234567',
+      youtube: 'https://youtube.com/',
+      twitter: 'https://twitter.com/',
+    }
+    if (links[platform]) {
+      window.open(links[platform], '_blank')
+    }
+  }
+
+  const handleDownloadApp = (platform) => {
+    if (platform === 'android') {
+      window.open('https://play.google.com/store/apps', '_blank')
+    } else if (platform === 'ios') {
+      window.open('https://apps.apple.com/', '_blank')
+    }
+  }
+
+  const handleWhatsApp = () => {
+    window.open('https://wa.me/79991234567', '_blank')
+  }
+
+  const handleCallManager = () => {
+    window.location.href = 'tel:+79991234567'
   }
 
   return (
@@ -429,6 +529,197 @@ function App() {
           )
         })}
       </nav>
+
+      <button
+        type="button"
+        className="ai-button"
+        onClick={toggleChat}
+        aria-label="AI Assistant"
+        aria-expanded={isChatOpen}
+      >
+        AI
+      </button>
+
+      {isChatOpen && (
+        <div className="chat-widget">
+          <div className="chat-widget__header">
+            <div className="chat-widget__header-info">
+              <div className="chat-widget__avatar">AI</div>
+              <div className="chat-widget__header-text">
+                <h3 className="chat-widget__title">AI Консультант</h3>
+                <span className="chat-widget__status">Онлайн</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="chat-widget__close"
+              onClick={toggleChat}
+              aria-label="Закрыть чат"
+            >
+              <FiX size={20} />
+            </button>
+          </div>
+
+          <div className="chat-widget__messages" ref={chatMessagesRef}>
+            {chatMessages.map((message) => (
+              <div
+                key={message.id}
+                className={`chat-widget__message ${
+                  message.sender === 'user'
+                    ? 'chat-widget__message--user'
+                    : 'chat-widget__message--bot'
+                }`}
+              >
+                <div className="chat-widget__message-content">
+                  {message.text}
+                </div>
+                <div className="chat-widget__message-time">
+                  {message.timestamp.toLocaleTimeString('ru-RU', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <form className="chat-widget__input-form" onSubmit={handleChatSubmit}>
+            <input
+              type="text"
+              className="chat-widget__input"
+              placeholder="Введите ваше сообщение..."
+              value={chatInput}
+              onChange={handleChatInputChange}
+              autoFocus
+            />
+            <button
+              type="submit"
+              className="chat-widget__send"
+              aria-label="Отправить сообщение"
+            >
+              <FiSend size={18} />
+            </button>
+          </form>
+        </div>
+      )}
+
+      <footer className="footer">
+        <div className="footer__container">
+          {/* Секция с кнопками загрузки и контактами */}
+          <section className="footer__actions">
+            {/* Текстовые ссылки сверху */}
+            <div className="footer__contact-links">
+              <button
+                type="button"
+                className="footer__contact-link"
+                onClick={handleWhatsApp}
+                aria-label="Перейти в WhatsApp"
+              >
+                <span className="footer__contact-link-text">Перейти в WhatsApp</span>
+                <span className="footer__contact-link-arrow">→</span>
+              </button>
+              <button
+                type="button"
+                className="footer__contact-link"
+                onClick={handleCallManager}
+                aria-label="Связаться с менеджером"
+              >
+                <span className="footer__contact-link-text">Связаться с менеджером</span>
+                <span className="footer__contact-link-arrow">→</span>
+              </button>
+            </div>
+
+            {/* Кнопки загрузки приложений */}
+            <div className="footer__download-grid">
+              <button
+                type="button"
+                className="footer__download-btn"
+                onClick={() => handleDownloadApp('android')}
+                aria-label="Загрузить на Android"
+              >
+                <div className="footer__download-icon footer__download-icon--android">
+                  <FaAndroid size={32} />
+                </div>
+                <div className="footer__download-text">
+                  <span className="footer__download-label">Загрузите на</span>
+                  <span className="footer__download-platform">Android</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                className="footer__download-btn"
+                onClick={() => handleDownloadApp('ios')}
+                aria-label="Загрузить на iOS"
+              >
+                <div className="footer__download-icon footer__download-icon--ios">
+                  <FaApple size={32} />
+                </div>
+                <div className="footer__download-text">
+                  <span className="footer__download-label">Загрузите на</span>
+                  <span className="footer__download-platform">iOS</span>
+                </div>
+              </button>
+            </div>
+          </section>
+
+          <div className="footer__bottom">
+            <div className="footer__social">
+              <button
+                type="button"
+                className="footer__social-btn"
+                onClick={() => handleSocialLink('instagram')}
+                aria-label="Instagram"
+              >
+                <FaInstagram size={22} />
+              </button>
+              <button
+                type="button"
+                className="footer__social-btn"
+                onClick={() => handleSocialLink('whatsapp')}
+                aria-label="WhatsApp"
+              >
+                <FaWhatsapp size={22} />
+              </button>
+              <button
+                type="button"
+                className="footer__social-btn"
+                onClick={() => handleSocialLink('youtube')}
+                aria-label="YouTube"
+              >
+                <FaYoutube size={22} />
+              </button>
+              <button
+                type="button"
+                className="footer__social-btn"
+                onClick={() => handleSocialLink('twitter')}
+                aria-label="X (Twitter)"
+              >
+                <FaXTwitter size={22} />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="footer__language-btn"
+              onClick={handleLanguageChange}
+              aria-label="Изменить язык"
+            >
+              {language === 'ru' ? (
+                <>
+                  <span className="footer__flag footer__flag--gb"></span>
+                  <span>English version</span>
+                </>
+              ) : (
+                <>
+                  <span className="footer__flag footer__flag--ru"></span>
+                  <span>Русская версия</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
