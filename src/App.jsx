@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
+import PropertyDetailPage from './pages/PropertyDetailPage'
 import {
   FiBell,
   FiSearch,
@@ -7,6 +8,8 @@ import {
   FiHeart,
   FiChevronDown,
   FiArrowRight,
+  FiArrowLeft,
+  FiShare2,
   FiX,
   FiSend,
   FiGlobe,
@@ -26,6 +29,8 @@ import {
 } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
 import { IoLocationOutline } from 'react-icons/io5'
+import { MdBed, MdOutlineBathtub } from 'react-icons/md'
+import { BiArea } from 'react-icons/bi'
 import {
   PiHouseLine,
   PiBuildings,
@@ -71,6 +76,24 @@ const recommendedProperties = [
     price: 1900,
     image:
       'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
+    ],
+    beds: 3,
+    baths: 2,
+    sqft: 2567,
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    broker: {
+      name: 'Muhammad Farhan',
+      phone: '18392719103',
+      avatar:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
+    },
   },
   {
     id: 2,
@@ -80,6 +103,24 @@ const recommendedProperties = [
     price: 1200,
     image:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
+    ],
+    beds: 2,
+    baths: 1,
+    sqft: 1500,
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    broker: {
+      name: 'Muhammad Farhan',
+      phone: '18392719103',
+      avatar:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
+    },
   },
 ]
 
@@ -92,6 +133,24 @@ const nearbyProperties = [
     price: 1000,
     image:
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
+    ],
+    beds: 2,
+    baths: 2,
+    sqft: 1800,
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    broker: {
+      name: 'Muhammad Farhan',
+      phone: '18392719103',
+      avatar:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
+    },
   },
   {
     id: 2,
@@ -101,6 +160,24 @@ const nearbyProperties = [
     price: 980,
     image:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
+    ],
+    beds: 1,
+    baths: 1,
+    sqft: 1200,
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    broker: {
+      name: 'Muhammad Farhan',
+      phone: '18392719103',
+      avatar:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
+    },
   },
 ]
 
@@ -134,6 +211,7 @@ function App() {
   ])
   const [chatInput, setChatInput] = useState('')
   const [language, setLanguage] = useState('ru')
+  const [selectedProperty, setSelectedProperty] = useState(null)
   const locationRef = useRef(null)
   const chatMessagesRef = useRef(null)
 
@@ -261,6 +339,87 @@ function App() {
     window.location.href = 'tel:+79991234567'
   }
 
+  const handlePropertyClick = (category, propertyId) => {
+    const allProperties = [
+      ...recommendedProperties.map((p) => ({ ...p, category: 'recommended' })),
+      ...nearbyProperties.map((p) => ({ ...p, category: 'nearby' })),
+    ]
+    const property = allProperties.find(
+      (p) => p.category === category && p.id === propertyId
+    )
+    if (property) {
+      setSelectedProperty(property)
+    }
+  }
+
+  const handleBackClick = () => {
+    setSelectedProperty(null)
+  }
+
+  const togglePropertyFavorite = () => {
+    if (selectedProperty) {
+      const key = `${selectedProperty.category}-${selectedProperty.id}`
+      setFavoriteProperties((prev) => {
+        const updated = new Map(prev)
+        updated.set(key, !prev.get(key))
+        return updated
+      })
+    }
+  }
+
+  const handleShare = () => {
+    if (navigator.share && selectedProperty) {
+      navigator
+        .share({
+          title: selectedProperty.name,
+          text: selectedProperty.description,
+          url: window.location.href,
+        })
+        .catch(() => {
+          // Fallback если share не поддерживается
+        })
+    }
+  }
+
+  const handleBookNow = () => {
+    // Обработчик бронирования
+    alert('Функция бронирования будет реализована позже')
+  }
+
+  const handleCallBroker = () => {
+    if (selectedProperty?.broker?.phone) {
+      window.location.href = `tel:${selectedProperty.broker.phone}`
+    }
+  }
+
+  const handleChatBroker = () => {
+    // Обработчик чата с брокером
+    alert('Чат с брокером будет реализован позже')
+  }
+
+  // Если выбрана страница деталей, отображаем её
+  if (selectedProperty) {
+    const isFavorite = favoriteProperties.get(
+      `${selectedProperty.category}-${selectedProperty.id}`
+    )
+
+    return (
+      <PropertyDetailPage
+        property={selectedProperty}
+        isFavorite={isFavorite}
+        onBack={handleBackClick}
+        onToggleFavorite={togglePropertyFavorite}
+        onShare={handleShare}
+        onBookNow={handleBookNow}
+        onCallBroker={handleCallBroker}
+        onChatBroker={handleChatBroker}
+        navigationItems={navigationItems}
+        activeNav={activeNav}
+        onNavChange={setActiveNav}
+      />
+    )
+  }
+
   return (
     <div className="app">
       <header className="header">
@@ -347,7 +506,12 @@ function App() {
 
         <div className="property-list property-list--horizontal">
           {recommendedProperties.map((property) => (
-            <article className="property-card" key={property.id}>
+            <article
+              className="property-card"
+              key={property.id}
+              onClick={() => handlePropertyClick('recommended', property.id)}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="property-card__image">
                 <img src={property.image} alt={property.name} />
                 <button
@@ -357,7 +521,10 @@ function App() {
                       ? 'property-card__favorite--active'
                       : ''
                   }`}
-                  onClick={() => toggleFavorite('recommended', property.id)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleFavorite('recommended', property.id)
+                  }}
                   aria-pressed={favoriteProperties.get(`recommended-${property.id}`)}
                 >
                   {favoriteProperties.get(`recommended-${property.id}`) ? (
@@ -394,6 +561,8 @@ function App() {
             <article
               className="property-card property-card--horizontal"
               key={property.id}
+              onClick={() => handlePropertyClick('nearby', property.id)}
+              style={{ cursor: 'pointer' }}
             >
               <div className="property-card__image property-card__image--small">
                 <img src={property.image} alt={property.name} />
@@ -404,7 +573,10 @@ function App() {
                       ? 'property-card__favorite--active'
                       : ''
                   }`}
-                  onClick={() => toggleFavorite('nearby', property.id)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleFavorite('nearby', property.id)
+                  }}
                   aria-pressed={favoriteProperties.get(`nearby-${property.id}`)}
                 >
                   {favoriteProperties.get(`nearby-${property.id}`) ? (
