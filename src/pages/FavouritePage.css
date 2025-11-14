@@ -1,0 +1,131 @@
+.favourite-page {
+  padding-bottom: 100px;
+}
+
+.favourite-page__header {
+  padding: 24px 18px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.favourite-page__title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.favourite-page__subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+.favourite-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+  min-height: 60vh;
+}
+
+.favourite-page__empty-icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(17, 24, 39, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  margin-bottom: 24px;
+}
+
+.favourite-page__empty-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 12px 0;
+}
+
+.favourite-page__empty-text {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+.favourite-page__content {
+  padding: 20px 18px;
+}
+
+.favourite-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.property-card--favourite {
+  min-width: unset;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.property-card--favourite:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.property-card--favourite .property-card__image {
+  aspect-ratio: 4 / 3;
+}
+
+.property-card__location-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.property-card__location-icon {
+  color: #6b7280;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.property-card__features {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.property-card__feature {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+@media (min-width: 480px) {
+  .favourite-page__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .favourite-page__header {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .favourite-page__content {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+

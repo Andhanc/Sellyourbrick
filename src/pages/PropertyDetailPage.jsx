@@ -221,9 +221,26 @@ function PropertyDetailPage({
 
       {/* Bottom Navigation */}
       <nav className="bottom-nav">
-        {navigationItems.map((item) => {
+        {navigationItems.map((item, index) => {
           const IconComponent = item.icon
+          const isCenter = index === 2
           const isActive = activeNav === item.id
+
+          if (isCenter) {
+            return (
+              <button
+                type="button"
+                className={`bottom-nav__center ${isActive ? 'bottom-nav__center--active' : ''}`}
+                key={item.id}
+                onClick={() => onNavChange(item.id)}
+                aria-label={item.label}
+                aria-pressed={isActive}
+              >
+                <IconComponent size={28} />
+              </button>
+            )
+          }
+
           return (
             <button
               key={item.id}
@@ -235,7 +252,7 @@ function PropertyDetailPage({
               aria-label={item.label}
               aria-pressed={isActive}
             >
-              <IconComponent />
+              <IconComponent size={26} />
             </button>
           )
         })}

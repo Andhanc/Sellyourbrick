@@ -144,14 +144,18 @@ function MapPage({ properties, onPropertyClick, onBack }) {
           <CenterMap position={mapCenter} zoom={mapZoom} />
 
           {/* Маркеры для каждого апартамента */}
-          {filteredProperties.map((property) => {
+          {filteredProperties.map((property, index) => {
             if (!property.coordinates) return null
             const [lat, lng] = property.coordinates
             const isHovered = hoveredProperty?.id === property.id
+            // Создаем уникальный ключ из category и id, если есть, иначе используем index
+            const uniqueKey = property.category && property.id
+              ? `${property.category}-${property.id}`
+              : property.id || `property-${index}`
 
             return (
               <Marker
-                key={property.id}
+                key={uniqueKey}
                 position={[lat, lng]}
                 icon={createCustomIcon(isHovered)}
                 eventHandlers={{

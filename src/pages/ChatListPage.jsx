@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FiSearch, FiArrowLeft } from 'react-icons/fi'
+import { FiSearch } from 'react-icons/fi'
 import './ChatListPage.css'
 
 function ChatListPage({ navigationItems, activeNav, onNavChange, onChatSelect }) {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import PropertyDetailPage from './pages/PropertyDetailPage'
+import FavouritePage from './pages/FavouritePage'
 import MapPage from './pages/MapPage'
 import ProfilePage from './pages/ProfilePage'
 import ChatListPage from './pages/ChatListPage'
@@ -209,6 +210,8 @@ function App() {
     fullName: '',
     message: '',
   })
+  const [isFormSubmitting, setIsFormSubmitting] = useState(false)
+  const [formMessage, setFormMessage] = useState({ type: null, text: '' }) // 'success' | 'error' | null
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [chatMessages, setChatMessages] = useState([
     {
@@ -223,8 +226,11 @@ function App() {
   const [selectedProperty, setSelectedProperty] = useState(null)
   const [showMap, setShowMap] = useState(false)
   const [selectedChat, setSelectedChat] = useState(null)
+  const [isAIOverFooter, setIsAIOverFooter] = useState(false)
   const locationRef = useRef(null)
   const chatMessagesRef = useRef(null)
+  const aiButtonRef = useRef(null)
+  const footerRef = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -236,6 +242,36 @@ function App() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  // Отслеживание пересечения AI-кнопки с футером
+  useEffect(() => {
+    const aiButton = aiButtonRef.current
+    const footer = footerRef.current
+
+    if (!aiButton || !footer) return
+
+    const checkIntersection = () => {
+      const aiRect = aiButton.getBoundingClientRect()
+      const footerRect = footer.getBoundingClientRect()
+
+      // Проверяем, пересекается ли AI-кнопка с футером по вертикали
+      const aiBottom = aiRect.bottom
+      const footerTop = footerRect.top
+
+      // Если нижняя граница AI-кнопки ниже верхней границы футера, то они пересекаются
+      setIsAIOverFooter(aiBottom >= footerTop - 10) // -10 для небольшого отступа
+    }
+
+    // Проверяем при загрузке и при скролле
+    checkIntersection()
+    window.addEventListener('scroll', checkIntersection, { passive: true })
+    window.addEventListener('resize', checkIntersection)
+
+    return () => {
+      window.removeEventListener('scroll', checkIntersection)
+      window.removeEventListener('resize', checkIntersection)
     }
   }, [])
 
@@ -261,15 +297,66 @@ function App() {
     }))
   }
 
-  const handleContactFormSubmit = (e) => {
+  const handleContactFormSubmit = async (e) => {
     e.preventDefault()
-    console.log('Form submitted:', contactForm)
-    setContactForm({
-      email: '',
-      fullName: '',
-      message: '',
-    })
-    alert('Спасибо за обращение! Мы свяжемся с вами в ближайшее время.')
+    setIsFormSubmitting(true)
+    setFormMessage({ type: null, text: '' })
+
+    try {
+      const formData = new FormData(e.target)
+      formData.append('access_key', '8df60a2c-f55f-4fb8-ad1c-adae170ab5c0')
+      formData.append('subject', 'Новое сообщение из формы контактов - Sellyourbrick')
+      // Web3Forms ожидает поле 'name', поэтому добавляем его из fullName
+      if (contactForm.fullName) {
+        formData.append('name', contactForm.fullName)
+      }
+
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setFormMessage({
+          type: 'success',
+          text: 'Спасибо за обращение! Мы свяжемся с вами в ближайшее время.',
+        })
+        e.target.reset()
+        setContactForm({
+          email: '',
+          fullName: '',
+          message: '',
+        })
+        // Очистить сообщение через 5 секунд
+        setTimeout(() => {
+          setFormMessage({ type: null, text: '' })
+        }, 5000)
+      } else {
+        console.log('Error', data)
+        setFormMessage({
+          type: 'error',
+          text: data.message || 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.',
+        })
+        // Очистить сообщение об ошибке через 7 секунд
+        setTimeout(() => {
+          setFormMessage({ type: null, text: '' })
+        }, 7000)
+      }
+    } catch (error) {
+      console.error('Form submission error:', error)
+      setFormMessage({
+        type: 'error',
+        text: 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или свяжитесь с нами другим способом.',
+      })
+      // Очистить сообщение об ошибке через 7 секунд
+      setTimeout(() => {
+        setFormMessage({ type: null, text: '' })
+      }, 7000)
+    } finally {
+      setIsFormSubmitting(false)
+    }
   }
 
   const toggleChat = () => {
@@ -450,6 +537,21 @@ function App() {
     )
   }
 
+  // Если выбрана страница избранного
+  if (activeNav === 'favourite') {
+    return (
+      <FavouritePage
+        favoriteProperties={favoriteProperties}
+        allProperties={allPropertiesForMap}
+        onToggleFavorite={toggleFavorite}
+        onPropertyClick={handlePropertyClick}
+        navigationItems={navigationItems}
+        activeNav={activeNav}
+        onNavChange={setActiveNav}
+      />
+    )
+  }
+
   // Если выбрана страница профиля
   if (activeNav === 'profile') {
     return (
@@ -457,6 +559,7 @@ function App() {
         navigationItems={navigationItems}
         activeNav={activeNav}
         onNavChange={setActiveNav}
+        onNavigateToFavourites={() => setActiveNav('favourite')}
       />
     )
   }
@@ -733,9 +836,28 @@ function App() {
                 required
               />
             </div>
-            <button type="submit" className="contact-form__submit">
-              <span>Отправить</span>
-              <FiArrowRight size={18} />
+            {formMessage.type && (
+              <div
+                className={`contact-form__message ${
+                  formMessage.type === 'success'
+                    ? 'contact-form__message--success'
+                    : formMessage.type === 'error'
+                    ? 'contact-form__message--error'
+                    : 'contact-form__message--info'
+                }`}
+              >
+                {formMessage.text}
+              </div>
+            )}
+            <button
+              type="submit"
+              className="contact-form__submit"
+              disabled={isFormSubmitting}
+            >
+              <span>
+                {isFormSubmitting ? 'Отправка...' : 'Отправить'}
+              </span>
+              {!isFormSubmitting && <FiArrowRight size={18} />}
             </button>
           </form>
         </div>
@@ -776,8 +898,9 @@ function App() {
       </nav>
 
       <button
+        ref={aiButtonRef}
         type="button"
-        className="ai-button"
+        className={`ai-button ${isAIOverFooter ? 'ai-button--over-footer' : ''}`}
         onClick={toggleChat}
         aria-label="AI Assistant"
         aria-expanded={isChatOpen}
@@ -848,7 +971,7 @@ function App() {
         </div>
       )}
 
-      <footer className="footer">
+      <footer ref={footerRef} className="footer">
         <div className="footer__container">
           {/* Секция с кнопками загрузки и контактами */}
           <section className="footer__actions">

@@ -97,12 +97,12 @@ function ChatPage({ chat, onBack, navigationItems, activeNav, onNavChange }) {
         <button type="button" className="chat-header__back" onClick={onBack}>
           <FiArrowLeft size={20} />
         </button>
-        <div className="chat-header__avatar">
-          <img src={chat.avatar} alt={chat.name} />
-        </div>
         <div className="chat-header__info">
           <h2 className="chat-header__name">{chat.name}</h2>
           <span className="chat-header__status">Онлайн</span>
+        </div>
+        <div className="chat-header__avatar">
+          <img src={chat.avatar} alt={chat.name} />
         </div>
       </header>
 

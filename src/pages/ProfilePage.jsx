@@ -3,7 +3,7 @@ import { FiLock, FiFileText, FiChevronRight, FiCalendar, FiShoppingBag, FiHelpCi
 import { IoLocationOutline } from 'react-icons/io5'
 import './ProfilePage.css'
 
-function ProfilePage({ navigationItems, activeNav, onNavChange }) {
+function ProfilePage({ navigationItems, activeNav, onNavChange, onNavigateToFavourites }) {
   // Данные пользователя (в реальном приложении будут из API)
   const userData = {
     name: 'Shahid Miah',
@@ -30,8 +30,15 @@ function ProfilePage({ navigationItems, activeNav, onNavChange }) {
 
   const handleItemClick = (itemId) => {
     // Обработка клика по пункту меню
+    if (itemId === 'favorites') {
+      // Переключаемся на страницу избранного
+      if (onNavigateToFavourites) {
+        onNavigateToFavourites()
+      }
+      return
+    }
     console.log('Clicked:', itemId)
-    // Здесь можно добавить навигацию или модальные окна
+    // Здесь можно добавить навигацию или модальные окна для других пунктов
   }
 
   return (
